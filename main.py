@@ -16,6 +16,7 @@ LONG_BREAK_MIN = 30
 sprint = 0
 current_sprint = [WORK_MIN,SHORT_BREAK_MIN,WORK_MIN,SHORT_BREAK_MIN,WORK_MIN,SHORT_BREAK_MIN,WORK_MIN,SHORT_BREAK_MIN,LONG_BREAK_MIN]
 rounds = 0
+timer = None
 # ---------------------------- TIMER RESET ------------------------------- # 
 
 
@@ -25,6 +26,7 @@ def reset():
     sprint = 0
     window.config(bg="YELLOW")
     rounds = 0
+    window.after_cancel(timer)
     return
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
@@ -51,18 +53,19 @@ def start():
 def counter(count):
     global sprint
     global rounds
+    global timer
     if count == 0:
         sprint += 1
         rounds += 1
         start()    
     if count > 0:
-        window.after(1000,counter,count-1)
+        timer = window.after(1000,counter,count-1)
     seconds = count % 60
     minutes = count/60
     if seconds < 10:
         seconds = f"0{seconds}"
 
-    canvas.itemconfig(timer, text=f'{math.floor(minutes)}:{seconds}')
+    canvas.itemconfig(timer_text, text=f'{math.floor(minutes)}:{seconds}')
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -82,7 +85,7 @@ tomato_img = resize_image('./tomato.png', 200, 200)
 canvas.create_image(75,75, image=tomato_img)
 
 
-timer = canvas.create_text(75,75, text="25:00", fill="white", font=(FONT_NAME, 20, "bold"))
+timer_text = canvas.create_text(75,75, text="25:00", fill="white", font=(FONT_NAME, 20, "bold"))
 
 title_label = tkinter.Label(text="pomodoro",anchor='center',bg=YELLOW)
 amount_label = tkinter.Label(text=rounds,bg=YELLOW)

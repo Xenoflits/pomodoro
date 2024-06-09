@@ -30,9 +30,13 @@ def resize_image(image_path, width, height):
     return ImageTk.PhotoImage(resized_image)
 
 canvas = tkinter.Canvas(width=300, height=300)
+canvas.config(bg=YELLOW)
+
 tomato_img = resize_image('./tomato.png', 250, 250)
-canvas.create_image(150,150, image=tomato_img)
+canvas.create_image(150,120, image=tomato_img)
 canvas.grid(row=0, column=0)
+
+canvas.create_text(150,150, text="00:00", fill="white", font=(FONT_NAME, 35, "bold"))
 
 
 

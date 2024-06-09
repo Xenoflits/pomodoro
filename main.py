@@ -1,5 +1,6 @@
 import tkinter
 from PIL import Image , ImageTk
+import math
 
 
 
@@ -11,24 +12,57 @@ YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
 WORK_MIN = 25
 SHORT_BREAK_MIN = 5
-LONG_BREAK_MIN = 20
-
+LONG_BREAK_MIN = 30
+sprint = 0
+current_sprint = [WORK_MIN,SHORT_BREAK_MIN,WORK_MIN,SHORT_BREAK_MIN,WORK_MIN,SHORT_BREAK_MIN,WORK_MIN,SHORT_BREAK_MIN,LONG_BREAK_MIN]
+rounds = 0
 # ---------------------------- TIMER RESET ------------------------------- # 
 
 
 def reset():
+    global sprint
+    global rounds
+    sprint = 0
+    window.config(bg="YELLOW")
+    rounds = 0
     return
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 
+def set_label(label_sprint):
+    print(f"set_label {label_sprint}")
+    title_label.config(text=label_sprint)
+
 def start():
-    counter(25)
+    global sprint
+    label_sprint = ""
+    print(current_sprint[sprint])
+    if current_sprint[sprint] == 25:
+        label_sprint = "Good Luck"
+        window.config(bg="GREEN")
+
+    else:
+        label_sprint = "Break"
+        window.config(bg="RED")
+    set_label(label_sprint)
+    counter(current_sprint[sprint]*60)
     
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
 def counter(count):
+    global sprint
+    global rounds
+    if count == 0:
+        sprint += 1
+        rounds += 1
+        start()    
     if count > 0:
         window.after(1000,counter,count-1)
-    canvas.itemconfig(timer, text=count)
+    seconds = count % 60
+    minutes = count/60
+    if seconds < 10:
+        seconds = f"0{seconds}"
+
+    canvas.itemconfig(timer, text=f'{math.floor(minutes)}:{seconds}')
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -48,10 +82,10 @@ tomato_img = resize_image('./tomato.png', 200, 200)
 canvas.create_image(75,75, image=tomato_img)
 
 
-timer = canvas.create_text(75,75, text="00:00", fill="white", font=(FONT_NAME, 20, "bold"))
+timer = canvas.create_text(75,75, text="25:00", fill="white", font=(FONT_NAME, 20, "bold"))
 
 title_label = tkinter.Label(text="pomodoro",anchor='center',bg=YELLOW)
-amount_label = tkinter.Label(text="V",bg=YELLOW)
+amount_label = tkinter.Label(text=rounds,bg=YELLOW)
 
 start_button = tkinter.Button(text="start", command=start,bg=GREEN)
 reset_button = tkinter.Button(text="reset", command=reset,bg=RED)
